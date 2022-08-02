@@ -11,18 +11,29 @@ const create_coupon = async (req, res, next) => {
       discount_Percentage: req.body.discount_Percentage,
       discount_amount: req.body.discount_amount,
       isactive: req.body.isactive,
-    });
-    await coupon.save();
+      
+    })
+    if(req.file){
+        coupon.couponimage=req.file.path
+
+    }
+
+    let newCoupon= await coupon.save();
+    console.log(`http://localhost:5001/${coupon.couponimage}`)
+
     res.json({
       message: "coupon created",
+      newCoupon,
+      
     });
-  } catch (error) {
-    console.log(error);
+
+}catch(err){
+    console.log(err);
     res.json({
       message: "error",
-    });
-  }
-};
+    });  
+}
+}
 
 const update_coupon = async (req, res, next) => {
   try {
@@ -76,7 +87,9 @@ const delete_id = async (req, res, next) => {
 
 const searchcoupon = async (req, res, next) => {
   try{ 
-    const { search, isactive, page, limit} = req.query;
+    let { search, isactive, page, limit} = req.query;
+    page = parseInt(page) || 1;
+    limit = parseInt(limit) || 10
   let paramSearch = {};
   if (search) {
     paramSearch.$or = [
@@ -94,11 +107,12 @@ const searchcoupon = async (req, res, next) => {
       },
     ];
   }
-  if (req.query.hasOwnProperty(isactive)) paramSearch.isactive = isactive;
+  if (req.query.hasOwnProperty("isactive")) paramSearch.isactive = isactive;
+  console.log(JSON.stringify(paramSearch))
   let response = await couponmangement.find(paramSearch)
-      .skip(limit * page - 1)
+      .skip(limit * (page - 1))
       .limit(limit);
-    let total = await couponmangement.countDocuments();
+    let total = await couponmangement.countDocuments(paramSearch);
     let pageMeta = {
       page: parseInt(page),
       limit: parseInt(limit),
@@ -107,7 +121,7 @@ const searchcoupon = async (req, res, next) => {
     };
   return res.send({data:response,pageMeta,message:"success"});
 } catch(err){
-  
+  console.log(err)
 }
 };
 module.exports = {

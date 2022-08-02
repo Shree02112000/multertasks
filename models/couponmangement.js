@@ -5,11 +5,11 @@ const mongoosePaginate = require('mongoose-paginate-v2')
 const couponSchema = new Schema({
 offer_name:{
          type:String,
-         unique:true
+        
 },
 coupon_name:{
         type:String,
-        unique:true
+
 
 },
 start_date:{
@@ -27,6 +27,9 @@ discount_amount:{
 },
 isactive:{
         type:Boolean
+},
+couponimage:{
+        type:String
 }
 },{timestamps:true})
 

@@ -4,7 +4,7 @@ const morgan   = require('morgan')
 const bodyparser = require('body-parser')
 const { Db } = require('mongodb')
 const { connected } = require('process')
-
+const path = require('path')
 const authroute = require('./routes/auth')
 mongoose.connect('mongodb://localhost:27017/registerdb',{useNewUrlParser:true , useUnifiedTopology:true})
 
@@ -20,8 +20,8 @@ const app =express()
 app.use(morgan('dev'))
 app.use(bodyparser.urlencoded({extended:true}))
 app.use(bodyparser.json())
-
-const PORT = process.env.PORT || 5000
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+const PORT = process.env.PORT || 8000
 app.listen(PORT,()=>{
     console.log(`server is running ${PORT}`)
 })
